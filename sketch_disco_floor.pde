@@ -16,7 +16,7 @@ NetAddress myBroadcastLocation;
 
 WB_Render render;
 
-PShader texlightShader;
+PShader texlightShader, lineShader;
 ArrayList<PImage> textures;
 
 PVector lookAt2 = new PVector(650, 1030, 920);
@@ -29,6 +29,8 @@ PVector lookAt, eye;
 PVector lookAt1 = new PVector(850, 210, 920);
 PVector eye1 = new PVector(-10, -40, 30);
 float camSwitch = 0;
+float yOffset = 0;
+float yOffsetDelayed = 0;
 float zOffset = 0;
 
 int nextRow = 20;
@@ -72,6 +74,7 @@ void setup() {
   textures.add(loadImage("tex3-v2.png"));
 
   texlightShader = loadShader("texlightfrag.glsl", "texlightvert.glsl");
+  lineShader = loadShader("linefrag.glsl", "linevert.glsl");
 
   Ani.init(this);
 
@@ -103,20 +106,27 @@ void setup() {
 
   b1 = color(light1Hue, light1Sat*0.5, light1Val*0.5);
   b2 = color(light2Hue, light2Sat, light2Val);
+
+  hint(ENABLE_STROKE_PERSPECTIVE);
 }
 
 void update() {
-  // directionalLight(255, 0, 0, 1, 2, -1);
-  // directionalLight(0, 0, 255, -1, 2, 1);
+
+  float fov = PI/3.0;
+  float cameraZ = (height/2.0) / tan(fov/2.0);
+  perspective(fov, float(width)/float(height), cameraZ/10.0, cameraZ*10.0);
+  camera();
+
   directionalLight(light1Hue, light1Sat, light1Val, -1, 0, 0);
   directionalLight(light2Hue, light2Sat, light2Val, 0, 0, -1);
   directionalLight(0.125, 0.125, 0.25, 0, 1, 0);
-  // ambientLight(0.25, 0.25, 0.25);
   ambientLight(0,0,0);
   lightFalloff(1, 0, 0);
   lightSpecular(0, 0, 0);
 
   // shader(texlightShader);
+  // shader(lineShader, LINES);
+
 
   // spawn new tiles, erase old tiles
   if (frameCount % 600 == 0) {
@@ -138,7 +148,7 @@ void update() {
   lookAt = PVector.lerp(lookAt1, lookAt2, camSwitch);
   eye = PVector.lerp(eye1, eye2, camSwitch);
   perspective(PI/6, float(width)/float(height), 1.0, 100000.0);
-  camera(eye.x, eye.y, eye.z + zOffset, lookAt.x, lookAt.y, lookAt.z + zOffset, 0, 1, 0);
+  camera(eye.x, eye.y + yOffsetDelayed, eye.z + zOffset, lookAt.x, lookAt.y + yOffsetDelayed, lookAt.z + zOffset, 0, 1, 0);
 
   for (Tile tile : tiles) {
     tile.update();
@@ -149,39 +159,21 @@ void update() {
 }
 
 void draw() {
-  background(0);
+  background(0,0);
 
-  draw2d();
+  // draw2d();
 
   // 3D
-  hint(ENABLE_DEPTH_TEST);
+  // hint(ENABLE_DEPTH_TEST);
 
   update();
 
-  // stroke(0, 0, 64);
-  // strokeWeight(2);
-  // noFill();
-  // for (int i = 0; i < 100; i++) {
-  //   float x1 = -100;
-  //   float x2 = 3000;
-  //   float z1 = -10 + i * 20;
-  //   float z2 = -10 + i * 20;
-  //   line(x1, -10, z1, x2, -10, z2);
-  // }
-  // for (int i = 0; i < 100; i++) {
-  //   float x1 = i * 20;
-  //   float x2 = i * 20;
-  //   float z1 = -100;
-  //   float z2 = 3000;
-  //   line(x1, -10, z1, x2, -10, z2);
-  // }
-
-  // noStroke();
-  // stroke(0);
-  // fill(255);
-  for (Tile tile : tiles) {
-    tile.draw();
-  }
+  pushMatrix();
+    translate(0, yOffset, 0);
+    for (Tile tile : tiles) {
+      tile.draw();
+    }
+  popMatrix();
   // for (Tile tile : bigTiles) {
   //   tile.draw(render);
   // }
@@ -230,6 +222,16 @@ void oscEvent(OscMessage theOscMessage) {
   else if (addr.equals("/FromVDMX/M1")) {
   }
   else if (addr.equals("/FromVDMX/R1")) {
+  }
+  else if (addr.equals("/FromVDMX/track/prev")) {
+    float newYOffset = yOffset + 500;
+    Ani.to(this, 1.0, "yOffset", newYOffset);
+    Ani.to(this, 3.0, "yOffsetDelayed", newYOffset);
+  }
+  else if (addr.equals("/FromVDMX/track/next")) {
+    float newYOffset = yOffset - 300;
+    Ani.to(this, 1.0, "yOffset", newYOffset);
+    Ani.to(this, 3.0, "yOffsetDelayed", newYOffset);
   }
 
   // theOscMessage.print();

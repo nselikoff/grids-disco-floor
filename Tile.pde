@@ -7,10 +7,8 @@ class Tile {
   boolean mIsAnimating = false;
   int mDelay;
   int mTimer;
-  float mAlpha = 0;
-  // HE_Mesh mesh;
-  // color mTopColor;
   PShape mCube;
+  PShape mThread;
 
   Tile(float x, float y, float z, PImage tex, float radius) {
     init(x, y, z, radius, tex);
@@ -23,84 +21,41 @@ class Tile {
   void init(float x, float y, float z, float radius, PImage tex) {
     mPos = new PVector(x, y, z);
     mRadius = radius;
-    // mDelay = 10 * int(random(4*mRadius, 10*mRadius));
     mDelay = 180 * int(random(1, 4));
     mTimer = 1000000;
-    // Ani.to(this, 4.0, "mAlpha", 255);
-    Ani.to(this, 4.0, "mAlpha", 1);
-
-    // mesh = new HE_Mesh( new HEC_Cube().setRadius( mRadius ) );
-
-    // loop through the faces of the cube, assign a color to each face
-    // and store it in the label field of the HE_Face
-    // Colors in Processing are integers, and the label field of HE_Face
-    // is also an integer, so this will work fine!
-    /*
-    color[] colors = { #a0003d, #f77900, #003cba, #00a12a, #ff5341, #1d89fc };
-    int currentFace = 0;
-    for ( HE_Face f : mesh.getFacesAsList() ) {
-      if (currentFace == 2) {
-        mTopColor = colors[int(random(0,5))];
-        f.setLabel( mTopColor );
-      } else {
-        f.setLabel( #ffffff );
-      }
-
-      currentFace++;
-    }
-
-    for (HE_Halfedge e : mesh.getHalfedgesAsList()) {
-      if (random(0, 1) > 0.9)
-        e.setLabel( #00ffff );
-      else
-        e.setLabel( #000000 );
-    }
-    */
-
     createCube(tex);
-
+    createThread();
   }
 
   void draw() {
     pushMatrix();
-    // fill(255, mAlpha);
-    fill(1.0, mAlpha);
-    translate(mPos.x, mPos.y + yOffset, mPos.z);
-    // box(mRadius);
-    // render.drawFaces(mesh);
-    
-    // Draw each face separately instead of drawing all faces at once
-    // Use the label of the face as the fill color.
-    /*
-    for ( HE_Face f : mesh.getFacesAsList() ) {
-      noStroke();
-      fill( f.getLabel() );
-      if (f.getLabel() != #ffffff && (mIsAnimating || mIsUp) ) {
-        emissive(f.getLabel());
-      } else {
-        emissive(0);
-      }
-      render.drawFace( f, tex );
-    }
-    */
-    pushMatrix();
-    scale(mRadius, mRadius, mRadius);
-    shape(mCube);
-    popMatrix();
+      translate(mPos.x, mPos.y + yOffset, mPos.z);
 
-    // strokeWeight(3);
-    // for (HE_Halfedge e : mesh.getHalfedgesAsList()) {
-    //   if (e.getLabel() != #000000) {
-    //     emissive(e.getLabel());
-    //     stroke( e.getLabel() );
-    //     render.drawEdge( e );
-    //   }
-    // }
+      pushMatrix();
+        scale(mRadius, mRadius, mRadius);
+        
+        shape(mCube);
+        if (mIsUp) {
+          shape(mThread);
+        }
 
-    // emissive(0);
-    
+      popMatrix();
 
     popMatrix();  
+  }
+
+  void createThread() {
+    mThread = createShape();
+    mThread.setFill(false);
+    mThread.setStroke(color(0,1,1));
+    mThread.setStrokeWeight(1);
+    mThread.beginShape();
+    mThread.vertex(-1, 1,  1);
+    mThread.vertex(-1, -1,  1);
+    mThread.vertex(-1, -1, -1);
+    mThread.vertex( 1, -1, -1);
+    mThread.vertex( 1, 1, -1);
+    mThread.endShape();
   }
 
   void createCube(PImage tex) {
@@ -160,8 +115,7 @@ class Tile {
 
   void update() {
     mTimer++;
-    // float multiplier = 1.0;//mIsUp ? 1.0 : 5.0;
-    if (mTimer > mDelay /* * multiplier */) {
+    if (mTimer > mDelay) {
       if (mIsUp) down(); else up();
       mTimer = 0;
     }
@@ -169,7 +123,6 @@ class Tile {
 
   void up() {
     mIsAnimating = true;
-    // Ani.to(this, 0.5*mRadius, "yOffset", -mRadius * 0.125, Ani.ELASTIC_OUT, "onEnd:setIsUp");
     Ani.to(this, 3.0, "yOffset", random(-mRadius, mRadius), Ani.EXPO_IN, "onEnd:setIsUp");
   }
 
@@ -180,7 +133,6 @@ class Tile {
 
   void down() {
     mIsAnimating = true;
-    // Ani.to(this, 0.25*mRadius, "yOffset", 0.0, Ani.EXPO_IN, "onEnd:setIsDown");
     Ani.to(this, 3.0, "yOffset", random(-mRadius, mRadius), Ani.EXPO_IN, "onEnd:setIsDown");
   }
 
