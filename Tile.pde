@@ -12,6 +12,7 @@ class Tile {
 
   Tile(float x, float y, float z, PImage tex, float radius) {
     init(x, y, z, radius, tex);
+    mCube.setTint(color(0,0,1,0.15));
   }
 
   Tile(float x, float y, float z, PImage tex) {

@@ -1,8 +1,3 @@
-import wblut.processing.*;
-import wblut.hemesh.*;
-import wblut.geom.*;
-import wblut.core.*;
-import wblut.math.*;
 import de.looksgood.ani.*;
 import oscP5.*;
 import netP5.*;
@@ -13,8 +8,6 @@ SyphonServer server;
 
 OscP5 oscP5;
 NetAddress myBroadcastLocation; 
-
-WB_Render render;
 
 PShader texlightShader, lineShader;
 ArrayList<PImage> textures;
@@ -93,16 +86,13 @@ void setup() {
     }
   }
 
-  // bigTiles = new ArrayList<Tile>();
+  bigTiles = new ArrayList<Tile>();
 
-  // for (int i = 0; i < 40; i++) {
-  //   float x = 5000;
-  //   float z = (i-1) * 2000;
-  //   bigTiles.add(new Tile(x, 0, z, 300));
-  //   bigTiles.add(new Tile(-1000, 0, z, 300));
-  // }
-
-  // render = new WB_Render( this );
+  bigTiles.add(new Tile(5000, 0, 5000, textures.get(int(random(0,3))), 1000));
+  bigTiles.add(new Tile(5000, -500, 15000, textures.get(int(random(0,3))), 1000));
+  bigTiles.add(new Tile(0, 0, 15000, textures.get(int(random(0,3))), 300));
+  bigTiles.add(new Tile(10000, 0, 2000, textures.get(int(random(0,3))), 300));
+  bigTiles.add(new Tile(15000, 2000, 2000, textures.get(int(random(0,3))), 2000));
 
   b1 = color(light1Hue, light1Sat*0.5, light1Val*0.5);
   b2 = color(light2Hue, light2Sat, light2Val);
@@ -173,10 +163,10 @@ void draw() {
     for (Tile tile : tiles) {
       tile.draw();
     }
+    for (Tile tile : bigTiles) {
+      tile.draw();
+    }
   popMatrix();
-  // for (Tile tile : bigTiles) {
-  //   tile.draw(render);
-  // }
 
   server.sendScreen();
 
