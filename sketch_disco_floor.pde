@@ -54,7 +54,7 @@ void settings() {
 void setup() {
   
   // Create syhpon server to send frames out.
-  server = new SyphonServer(this, "sketch_thread_lattice");
+  server = new SyphonServer(this, "sketch_disco_floor");
 
   // smooth(8);
   frameRate(60);
@@ -187,25 +187,19 @@ void oscEvent(OscMessage theOscMessage) {
   if (addr.equals("/FromVDMX/Slider1")) {
   }
   else if (addr.equals("/FromVDMX/Slider2")) {
-    camSwitch = floatVal;
   }
   else if (addr.equals("/FromVDMX/Slider3")) {
-    // light1Hue = floatVal;
   }
   else if (addr.equals("/FromVDMX/Slider4")) {
-    // light1Sat = floatVal;
   }
   else if (addr.equals("/FromVDMX/Slider5")) {
-    // light1Val = floatVal;
+    camSwitch = floatVal;
   }
   else if (addr.equals("/FromVDMX/Slider6")) {
-    // light2Hue = floatVal;
   }
   else if (addr.equals("/FromVDMX/Slider7")) {
-    // light2Sat = floatVal;
   }
   else if (addr.equals("/FromVDMX/Slider8")) {
-    // light2Val = floatVal;
   }
   else if (addr.equals("/FromVDMX/S1")) {
   }
