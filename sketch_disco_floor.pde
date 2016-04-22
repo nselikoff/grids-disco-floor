@@ -54,7 +54,7 @@ void settings() {
 void setup() {
   
   // Create syhpon server to send frames out.
-  server = new SyphonServer(this, "sketch_disco_floor");
+  server = new SyphonServer(this, "disco_floor");
 
   // smooth(8);
   frameRate(60);
